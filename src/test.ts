@@ -72,10 +72,11 @@ function Min(limit: number) {
       };
       const setter = function(newVal: string) {
          if(newVal.length < limit) {
-          Object.defineProperty(target, 'errors', {
-            value: `Your password should be bigger than ${limit}`
-          });
+        //   Object.defineProperty(target, 'errors', {
+        //     value: `Your password should be bigger than ${limit}`
+        //   });
           Reflect.defineMetadata('validatePassword',limit,target,propertyKey)
+
         }
         else {
           value = newVal;   
@@ -89,25 +90,25 @@ function Min(limit: number) {
   }
 
 
-  function isEmail(target:Object,propertyKey:string){
-    let value:string;
-    // const getter = ()=>value;
-    const setter=(newvalue:string)=>{
-        //check is email
-        if(!newvalue.includes('.')){
-            Reflect.defineMetadata('validateEmail',newvalue,target,propertyKey);
-            return false;
-        }
-        else{
-            value = newvalue;
-        }
-    }
+//   function isEmail(target:Object,propertyKey:string){
+//     let value:string;
+//     // const getter = ()=>value;
+//     const setter=(newvalue:string)=>{
+//         //check is email
+//         if(!newvalue.includes('.')){
+//             Reflect.defineMetadata('validateEmail',newvalue,target,propertyKey);
+//             return false;
+//         }
+//         else{
+//             value = newvalue;
+//         }
+//     }
 
-    Object.defineProperty(target,propertyKey,{
-        set:setter,
-        // get:getter
-    })
-  }
+//     Object.defineProperty(target,propertyKey,{
+//         set:setter,
+//         // get:getter
+//     })
+//   }
 
 
 
@@ -118,7 +119,10 @@ function Min(limit: number) {
         propertyDesc.value = function(newValue:string){
             //pered tem kak cto-to sdelat
             newValue="_"+newValue;
-            oldValue.call(this,newValue);
+            
+
+
+            // oldValue.call(this,newValue);
             // return newValue;
         }
         return propertyDesc;
@@ -128,11 +132,12 @@ function Min(limit: number) {
   }
 
 class User {
+
     @Min(8)
     private _password:string;
 
 
-    @isEmail
+    // @isEmail
     private _email:string;
 
     constructor(password:string,email:string,public name:string){
@@ -159,5 +164,16 @@ console.log(user.password)
 user.setPassword('rasdasdasdsadsd')
 console.log(user.password)
 
-// let errors = Reflect.getMetadata("validatePassword",user,"_password");
+let errors = Reflect.getMetadata("validatePassword",user,"_password");
 // console.log('errr',errors);
+
+// function getName(name:unknown){
+//   if(typeof name==="string")
+//     return name.length;
+// }
+
+// getName('ramin');
+
+// [state,setState]
+
+const ramin:[number,Function] = [12,()=>console.log('ramin')];

@@ -8,7 +8,7 @@ import { IUserService } from "./user.service.interface";
 export class UserService implements IUserService{
     async createUser({email,password,name}: UserLoginDto){
         const newUser = new User(email,name);
-        await newUser.setPassword(password)
+        await newUser.setPassword(password,10)
         return newUser;
     }
 

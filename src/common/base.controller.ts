@@ -33,6 +33,8 @@ export abstract class BaseController{
     }
 
     protected bindRoutes (routes:IControllerRoute[]){
+        console.log('ra',Symbol.for("Application"))
+        console.log('ra',Symbol.for("Application"))
         for (const route of routes) {
             this.logger.log(`Add Route: type:${route.method}: ${route.path} `)
             const middleware = route.middlewares?.map(m=>m.execute.bind(m));

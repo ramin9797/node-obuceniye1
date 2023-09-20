@@ -66,9 +66,9 @@ function Min(limit) {
         };
         const setter = function (newVal) {
             if (newVal.length < limit) {
-                Object.defineProperty(target, 'errors', {
-                    value: `Your password should be bigger than ${limit}`
-                });
+                //   Object.defineProperty(target, 'errors', {
+                //     value: `Your password should be bigger than ${limit}`
+                //   });
                 Reflect.defineMetadata('validatePassword', limit, target, propertyKey);
             }
             else {
@@ -81,24 +81,24 @@ function Min(limit) {
         });
     };
 }
-function isEmail(target, propertyKey) {
-    let value;
-    // const getter = ()=>value;
-    const setter = (newvalue) => {
-        //check is email
-        if (!newvalue.includes('.')) {
-            Reflect.defineMetadata('validateEmail', newvalue, target, propertyKey);
-            return false;
-        }
-        else {
-            value = newvalue;
-        }
-    };
-    Object.defineProperty(target, propertyKey, {
-        set: setter,
-        // get:getter
-    });
-}
+//   function isEmail(target:Object,propertyKey:string){
+//     let value:string;
+//     // const getter = ()=>value;
+//     const setter=(newvalue:string)=>{
+//         //check is email
+//         if(!newvalue.includes('.')){
+//             Reflect.defineMetadata('validateEmail',newvalue,target,propertyKey);
+//             return false;
+//         }
+//         else{
+//             value = newvalue;
+//         }
+//     }
+//     Object.defineProperty(target,propertyKey,{
+//         set:setter,
+//         // get:getter
+//     })
+//   }
 function MethodChangePassword(newPasswd) {
     return function (target, propertyKey, propertyDesc) {
         console.log('start');
@@ -106,7 +106,7 @@ function MethodChangePassword(newPasswd) {
         propertyDesc.value = function (newValue) {
             //pered tem kak cto-to sdelat
             newValue = "_" + newValue;
-            oldValue.call(this, newValue);
+            // oldValue.call(this,newValue);
             // return newValue;
         };
         return propertyDesc;
@@ -133,10 +133,6 @@ __decorate([
     __metadata("design:type", String)
 ], User.prototype, "_password", void 0);
 __decorate([
-    isEmail,
-    __metadata("design:type", String)
-], User.prototype, "_email", void 0);
-__decorate([
     MethodChangePassword('ramin'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
@@ -146,5 +142,12 @@ const user = new User("rami1n121212", 'ramin.web.97', "ramin");
 console.log(user.password);
 user.setPassword('rasdasdasdsadsd');
 console.log(user.password);
-// let errors = Reflect.getMetadata("validatePassword",user,"_password");
-// console.log('errr',errors);
+let errors = Reflect.getMetadata("validatePassword", user, "_password");
+console.log('errr', errors);
+// function getName(name:unknown){
+//   if(typeof name==="string")
+//     return name.length;
+// }
+// getName('ramin');
+// [state,setState]
+const ramin = [12, () => console.log('ramin')];
