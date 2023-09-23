@@ -25,9 +25,9 @@ class User {
     get password() {
         return this._password;
     }
-    setPassword(passwd) {
+    setPassword(passwd, salt) {
         return __awaiter(this, void 0, void 0, function* () {
-            this._password = yield (0, bcryptjs_1.hash)(passwd, 10);
+            this._password = yield (0, bcryptjs_1.hash)(passwd, salt);
         });
     }
 }

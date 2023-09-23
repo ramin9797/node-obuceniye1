@@ -13,8 +13,7 @@ exports.BaseController = void 0;
 const express_1 = require("express");
 const inversify_1 = require("inversify");
 let BaseController = exports.BaseController = class BaseController {
-    constructor(logger) {
-        this.logger = logger;
+    constructor() {
         this._router = (0, express_1.Router)();
     }
     get router() {
@@ -31,19 +30,18 @@ let BaseController = exports.BaseController = class BaseController {
         return res.status(201).json({ message: "Created" });
     }
     bindRoutes(routes) {
-        var _a;
-        console.log('ra', Symbol.for("Application"));
-        console.log('ra', Symbol.for("Application"));
-        for (const route of routes) {
-            this.logger.log(`Add Route: type:${route.method}: ${route.path} `);
-            const middleware = (_a = route.middlewares) === null || _a === void 0 ? void 0 : _a.map(m => m.execute.bind(m));
-            const handler = route.func.bind(this);
-            const pipeline = middleware ? [...middleware, handler] : handler;
-            this.router[route.method](route.path, pipeline);
-        }
+        // console.log('ra',Symbol.for("Application"))
+        // console.log('ra',Symbol.for("Application"))
+        // for (const route of routes) {
+        //     this.logger.log(`Add Route: type:${route.method}: ${route.path} `)
+        //     const middleware = route.middlewares?.map(m=>m.execute.bind(m));
+        //     const handler = route.func.bind(this)
+        //     const pipeline= middleware?[...middleware,handler]:handler;
+        //     this.router[route.method](route.path,pipeline)
+        // }
     }
 };
 exports.BaseController = BaseController = __decorate([
     (0, inversify_1.injectable)(),
-    __metadata("design:paramtypes", [Object])
+    __metadata("design:paramtypes", [])
 ], BaseController);

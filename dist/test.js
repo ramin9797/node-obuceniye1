@@ -143,7 +143,7 @@ console.log(user.password);
 user.setPassword('rasdasdasdsadsd');
 console.log(user.password);
 let errors = Reflect.getMetadata("validatePassword", user, "_password");
-console.log('errr', errors);
+// console.log('errr',errors);
 // function getName(name:unknown){
 //   if(typeof name==="string")
 //     return name.length;

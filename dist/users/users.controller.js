@@ -20,27 +20,49 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserController = void 0;
 const base_controller_1 = require("../common/base.controller");
 const inversify_1 = require("inversify");
 const types_1 = require("../types");
 const http_error_class_1 = require("../errors/http-error.class");
+const controller_decorator_1 = __importDefault(require("../utils/controller.decorator"));
+const handlers_decorator_1 = require("../utils/handlers.decorator");
+const middleware_decorator_1 = require("../utils/middleware.decorator");
+const simple_middleware_1 = require("../common/simple.middleware");
 let UserController = exports.UserController = class UserController extends base_controller_1.BaseController {
-    constructor(logger, userService) {
-        super(logger);
+    constructor(logger, userService, config) {
+        super();
         this.userService = userService;
-        this.bindRoutes([
-            { path: '/register', method: 'post', func: this.register },
-            { path: '/login', method: 'post', func: this.login }
-        ]);
+        this.config = config;
+        // this.bindRoutes([
+        //     {path:'/register',method:'post',func:this.register,middlewares:[new ValidateMiddleware(UserLoginDto)]},
+        //     {path:'/login',method:'post',func:this.login}
+        // ])
+    }
+    allUser(req, res) {
+        res.status(200).json({
+            message: "good"
+        });
+    }
+    allUser2(req, res) {
+        res.status(200).json({
+            message: "good"
+        });
     }
     login(req, res, next) {
+        console.log('req', req.user);
         next(new http_error_class_1.HttpError(401, 'Error auth', 'login'));
     }
     register({ body }, res, next) {
+        var _a, _b;
         return __awaiter(this, void 0, void 0, function* () {
-            const result = this.userService.createUser(body);
+            let salt = (_a = this.config) === null || _a === void 0 ? void 0 : _a.get("SALT");
+            console.log(salt);
+            const result = (_b = this.userService) === null || _b === void 0 ? void 0 : _b.createUser(body);
             if (!result) {
                 return next(new http_error_class_1.HttpError(422, "user already exists", 'register'));
             }
@@ -48,9 +70,33 @@ let UserController = exports.UserController = class UserController extends base_
         });
     }
 };
+__decorate([
+    (0, handlers_decorator_1.Get)("/all"),
+    (0, middleware_decorator_1.Middleware)([simple_middleware_1.simpleMiddleware2, simple_middleware_1.simpleMiddleware]),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", void 0)
+], UserController.prototype, "allUser", null);
+__decorate([
+    (0, handlers_decorator_1.Get)("/all2"),
+    (0, middleware_decorator_1.Middleware)([simple_middleware_1.simpleMiddleware2]),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", void 0)
+], UserController.prototype, "allUser2", null);
+__decorate([
+    (0, handlers_decorator_1.Post)("/login"),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object, Function]),
+    __metadata("design:returntype", void 0)
+], UserController.prototype, "login", null);
 exports.UserController = UserController = __decorate([
     (0, inversify_1.injectable)(),
+    (0, controller_decorator_1.default)("/users")
+    // @ClassMiddleware(simpleMiddleware3)
+    ,
     __param(0, (0, inversify_1.inject)(types_1.TYPES.ILogger)),
     __param(1, (0, inversify_1.inject)(types_1.TYPES.UserService)),
-    __metadata("design:paramtypes", [Object, Object])
+    __param(2, (0, inversify_1.inject)(types_1.TYPES.ConfigeService)),
+    __metadata("design:paramtypes", [Object, Object, Object])
 ], UserController);

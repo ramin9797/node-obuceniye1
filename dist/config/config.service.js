@@ -24,6 +24,7 @@ let ConfigService = exports.ConfigService = class ConfigService {
             logger.error('Error while get dotenv');
         }
         else {
+            this.logger.log("ENV FILE WAS DOWNLOADED");
             this.config = result.parsed;
         }
     }
@@ -32,6 +33,7 @@ let ConfigService = exports.ConfigService = class ConfigService {
     }
 };
 exports.ConfigService = ConfigService = __decorate([
+    (0, inversify_1.injectable)(),
     __param(0, (0, inversify_1.inject)(types_1.TYPES.ILogger)),
     __metadata("design:paramtypes", [Object])
 ], ConfigService);

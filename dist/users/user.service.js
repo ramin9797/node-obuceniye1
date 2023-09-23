@@ -22,7 +22,7 @@ let UserService = exports.UserService = class UserService {
     createUser({ email, password, name }) {
         return __awaiter(this, void 0, void 0, function* () {
             const newUser = new user_entity_1.User(email, name);
-            yield newUser.setPassword(password);
+            yield newUser.setPassword(password, 10);
             return newUser;
         });
     }

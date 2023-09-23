@@ -5,17 +5,19 @@
   "main": "index.js",
   "type": "commonjs",
   "scripts": {
-    "start": "node ./dist/main.js",
+    "start": "tsc && nodemon ./dist/main.js",
     "build": "tsc",
     "dev": "nodemon",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev:inspect": "nodemon -e ts,json --exec node --inspect=localhost:9222 -r ts-node/register src/main.ts"
+    "dev:inspect": "nodemon -e ts,json --exec node --inspect=localhost:9222 -r ts-node/register src/main.ts",
+    "dev2": "nodemon src/main.ts"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@prisma/client": "^5.1.1",
+    "@types/dotenv": "^8.2.0",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.20.2",
     "class-transformer": "^0.5.1",

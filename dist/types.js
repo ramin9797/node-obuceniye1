@@ -7,4 +7,5 @@ exports.TYPES = {
     UserController: Symbol.for("UserController"),
     UserService: Symbol.for("UserService"),
     ExceptionFilter: Symbol.for("ExceptionFilter"),
+    ConfigeService: Symbol.for("ConfigService")
 };

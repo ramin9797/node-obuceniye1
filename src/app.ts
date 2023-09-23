@@ -9,6 +9,11 @@ import 'reflect-metadata'
 import { IUserController } from "./users/users.controller.interface";
 import { json } from "body-parser";
 import { IConfigService } from "./config/config.service.interface";
+import { controllers } from "./common/controllers";
+import { MetadataKeys } from "./utils/metadata.keys";
+import { IRouter } from "./utils/handlers.decorator";
+import { BaseController } from "./common/base.controller";
+import { classMetadataKey } from "./utils/types";
 
 @injectable()
 export class App {
@@ -24,7 +29,7 @@ export class App {
     
     ){
         this.app = express();
-        this.port = 8000;
+        this.port = parseInt(config.get("PORT"));
     }
 
 
@@ -33,18 +38,49 @@ export class App {
     }
 
     useRoutes(){
-        const router = this.app;
-        this.app.use('/users',this.userController.router);
+        const exRouter = express.Router();
+        const info :Array<{api:string,handler:string}> = [];
+        controllers.forEach((controllerClass)=>{
+            const controllerInstance = new controllerClass() as any;
+            const basePath = Reflect.getMetadata(MetadataKeys.BASE_PATH,controllerClass);
+            const routers:IRouter[] = Reflect.getMetadata(MetadataKeys.ROUTERS,controllerClass);
+            // const middlewares = Reflect.getMetadata(MetadataKeys.Middlewares,controllerClass);
+            // console.log('miee',middlewares);
+            const middlewares = {middlewares:[]};
+
+            const classMiddlewares = Reflect.getMetadata(classMetadataKey,controllerClass) ||{middlewares:[]}
+            // symbol use here for unique id
+           
+            routers.forEach(({method,path,handler})=>{
+                const methodMidd = Reflect.getOwnMetadata(handler,controllerClass) || {}
+                
+                let handlers = controllerInstance[String(handler)].bind(controllerInstance);
+                if(methodMidd.middlewares?.length){
+                    handlers = [...classMiddlewares.middlewares,...methodMidd.middlewares,handlers];
+                }
+
+                exRouter[method](path,handlers)
+                info.push({
+                    api: `${method.toLocaleUpperCase()} ${basePath + path}`,
+                    handler: `${controllerClass.name}.${String(handler)}`,
+                });
+            })
+            this.app.use(basePath,exRouter);
+        })
+
+
+        // const router = this.app;
+        // this.app.use('/users',this.userController.router);
         // router.use((req, res, next) => {
         //     console.log('Time: ', Date.now())
         //     next()
         // })
 
-        // router.get('/login', (req, res,next) => {
-        //      next(new HttpError(401,'ramin'))
-        // })
+        exRouter.get('/login', (req, res,next) => {
+             next(new HttpError(401,'ramin'))
+        })
         // this.app.use('/users',useRouter)
-
+        console.table(info);
     }
 
     useExceptionFilters(){
@@ -52,7 +88,7 @@ export class App {
     }
 
     public async init(){
-        this.useMiddleware()
+        // this.useMiddleware()
         this.useRoutes();
         this.useExceptionFilters();
         this.server = this.app.listen(this.port);

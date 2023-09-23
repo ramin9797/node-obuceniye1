@@ -1,5 +1,4 @@
 import { Router,Response } from "express";
-import { ILogger } from "../logger/logger.interface";
 import { IControllerRoute } from "./route.interface";
 import { injectable } from "inversify";
 
@@ -10,7 +9,7 @@ export abstract class BaseController{
     private readonly _router: Router;
 
 
-    constructor(private logger:ILogger){
+    constructor(){
         this._router = Router();
     }
 
@@ -33,15 +32,15 @@ export abstract class BaseController{
     }
 
     protected bindRoutes (routes:IControllerRoute[]){
-        console.log('ra',Symbol.for("Application"))
-        console.log('ra',Symbol.for("Application"))
-        for (const route of routes) {
-            this.logger.log(`Add Route: type:${route.method}: ${route.path} `)
-            const middleware = route.middlewares?.map(m=>m.execute.bind(m));
-            const handler = route.func.bind(this)
-            const pipeline= middleware?[...middleware,handler]:handler;
-            this.router[route.method](route.path,pipeline)
-        }
+        // console.log('ra',Symbol.for("Application"))
+        // console.log('ra',Symbol.for("Application"))
+        // for (const route of routes) {
+        //     this.logger.log(`Add Route: type:${route.method}: ${route.path} `)
+        //     const middleware = route.middlewares?.map(m=>m.execute.bind(m));
+        //     const handler = route.func.bind(this)
+        //     const pipeline= middleware?[...middleware,handler]:handler;
+        //     this.router[route.method](route.path,pipeline)
+        // }
     }
 
 }

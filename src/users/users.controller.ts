@@ -10,24 +10,44 @@ import { User } from "./user.entity";
 import { IUserService } from "./user.service.interface";
 import { IConfigService } from "../config/config.service.interface";
 import { ValidateMiddleware } from "../common/validate.middleware";
+import Controller from "../utils/controller.decorator";
+import { Get, Post } from "../utils/handlers.decorator";
+import { ClassMiddleware, Middleware } from "../utils/middleware.decorator";
+import { simpleMiddleware, simpleMiddleware2, simpleMiddleware3 } from "../common/simple.middleware";
 
 @injectable()
+@Controller("/users")
+// @ClassMiddleware(simpleMiddleware3)
 export class UserController extends BaseController implements IUserController{
-
     constructor(
-        @inject(TYPES.ILogger) logger:ILogger,
-        @inject(TYPES.UserService) private userService:IUserService,
-        @inject(TYPES.ConfigeService) private config:IConfigService
+        @inject(TYPES.ILogger) logger?:ILogger,
+        @inject(TYPES.UserService) private userService?:IUserService,
+        @inject(TYPES.ConfigeService) private config?:IConfigService
     ){
-        super(logger);
-        this.bindRoutes([
-            {path:'/register',method:'post',func:this.register,middlewares:[new ValidateMiddleware(UserLoginDto)]},
-            {path:'/login',method:'post',func:this.login}
-        ])
+        super();
+        // this.bindRoutes([
+        //     {path:'/register',method:'post',func:this.register,middlewares:[new ValidateMiddleware(UserLoginDto)]},
+        //     {path:'/login',method:'post',func:this.login}
+        // ])
     }
 
+    @Get("/all")
+    @Middleware([simpleMiddleware2,simpleMiddleware])
+    allUser(req:Request,res:Response){
+        res.status(200).json({
+            message:"good"
+        })
+    }
+    @Get("/all2")
+    @Middleware([simpleMiddleware2])
+    allUser2(req:Request,res:Response){
+        res.status(200).json({
+            message:"good"
+        })
+    }
 
-    login(req:Request<{},{},UserLoginDto>,res:Response,next:NextFunction){
+    @Post("/login")
+    login(req:Request,res:Response,next:NextFunction){
         console.log('req',req.user);
         
         next(new HttpError(401,'Error auth','login'))
@@ -35,10 +55,10 @@ export class UserController extends BaseController implements IUserController{
 
 
     async register({body}:Request<{},{},UserLoginDto>,res:Response,next:NextFunction){
-        let salt = this.config.get("SALT");
+        let salt = this.config?.get("SALT");
         console.log(salt);
         
-        const result = this.userService.createUser(body);
+        const result = this.userService?.createUser(body);
         if(!result){
             return next(new HttpError(422,"user already exists",'register'))
         }
