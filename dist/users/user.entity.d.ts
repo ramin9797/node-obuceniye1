@@ -1,8 +1,9 @@
 export declare class User {
+    id: number;
     private readonly _email;
-    private readonly _name;
     private _password;
-    constructor(_email: string, _name: string);
+    private _name;
+    constructor(email: string, name: string, password: string);
     get email(): string;
     get name(): string;
     get password(): string;

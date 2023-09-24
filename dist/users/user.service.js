@@ -17,13 +17,21 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserService = void 0;
 const inversify_1 = require("inversify");
-const user_entity_1 = require("./user.entity");
 let UserService = exports.UserService = class UserService {
+    // constructor(private readonly userRepository: Repository<User>) {}
     createUser({ email, password, name }) {
         return __awaiter(this, void 0, void 0, function* () {
-            const newUser = new user_entity_1.User(email, name);
-            yield newUser.setPassword(password, 10);
-            return newUser;
+            // const newUser = new User("ramin.web.97@gmail.com","ramin","ramin1234");
+            // let res = await this.userRepository.create(newUser);
+            // console.log('re',res);
+            // return res;
+            // await newUser.setPassword(password,10)
+            // return newUser;
+        });
+    }
+    allUsers() {
+        return __awaiter(this, void 0, void 0, function* () {
+            // return this.userRepository.find({}); 
         });
     }
 };

@@ -33,9 +33,11 @@ const controller_decorator_1 = __importDefault(require("../utils/controller.deco
 const handlers_decorator_1 = require("../utils/handlers.decorator");
 const middleware_decorator_1 = require("../utils/middleware.decorator");
 const simple_middleware_1 = require("../common/simple.middleware");
+const user_service_1 = require("./user.service");
 let UserController = exports.UserController = class UserController extends base_controller_1.BaseController {
     constructor(logger, userService, config) {
         super();
+        this.logger = logger;
         this.userService = userService;
         this.config = config;
         // this.bindRoutes([
@@ -44,6 +46,9 @@ let UserController = exports.UserController = class UserController extends base_
         // ])
     }
     allUser(req, res) {
+        var _a;
+        let result = (_a = this.userService) === null || _a === void 0 ? void 0 : _a.allUsers();
+        console.log('rr', result);
         res.status(200).json({
             message: "good"
         });
@@ -58,15 +63,15 @@ let UserController = exports.UserController = class UserController extends base_
         next(new http_error_class_1.HttpError(401, 'Error auth', 'login'));
     }
     register({ body }, res, next) {
-        var _a, _b;
+        var _a;
         return __awaiter(this, void 0, void 0, function* () {
-            let salt = (_a = this.config) === null || _a === void 0 ? void 0 : _a.get("SALT");
-            console.log(salt);
-            const result = (_b = this.userService) === null || _b === void 0 ? void 0 : _b.createUser(body);
-            if (!result) {
-                return next(new http_error_class_1.HttpError(422, "user already exists", 'register'));
-            }
-            this.ok(res, result);
+            // let salt = this.config?.get("SALT");
+            // console.log(salt);
+            console.log('tt', this.logger);
+            console.log('ddd', body);
+            console.log('this.userService', this.userService);
+            const result = yield ((_a = this.userService) === null || _a === void 0 ? void 0 : _a.createUser(body));
+            console.log('resssss', result);
         });
     }
 };
@@ -90,6 +95,12 @@ __decorate([
     __metadata("design:paramtypes", [Object, Object, Function]),
     __metadata("design:returntype", void 0)
 ], UserController.prototype, "login", null);
+__decorate([
+    (0, handlers_decorator_1.Post)("/register"),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object, Function]),
+    __metadata("design:returntype", Promise)
+], UserController.prototype, "register", null);
 exports.UserController = UserController = __decorate([
     (0, inversify_1.injectable)(),
     (0, controller_decorator_1.default)("/users")
@@ -98,5 +109,5 @@ exports.UserController = UserController = __decorate([
     __param(0, (0, inversify_1.inject)(types_1.TYPES.ILogger)),
     __param(1, (0, inversify_1.inject)(types_1.TYPES.UserService)),
     __param(2, (0, inversify_1.inject)(types_1.TYPES.ConfigeService)),
-    __metadata("design:paramtypes", [Object, Object, Object])
+    __metadata("design:paramtypes", [Object, user_service_1.UserService, Object])
 ], UserController);

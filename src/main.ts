@@ -7,10 +7,11 @@ import { TYPES } from "./types";
 import { IExceptionFilters } from "./errors/exception.filter.interface";
 import { IUserController } from "./users/users.controller.interface";
 import { UserController } from "./users/users.controller";
-import { IUserService } from "./users/user.service.interface";
 import { UserService } from "./users/user.service";
 import { IConfigService } from "./config/config.service.interface";
 import { ConfigService } from "./config/config.service";
+import { Repository, getRepository } from "typeorm";
+import { User } from "./users/user.entity";
 
 // async function bootstrap(){
 //     const logger = new LoggerService();
@@ -42,19 +43,39 @@ export interface IBootstrapRun{
 
 export const appBindings = new ContainerModule((bind:interfaces.Bind)=>{
     bind<App>(TYPES.Application).to(App)
-    bind<ILogger>(TYPES.ILogger).to(LoggerService).inSingletonScope()
-    bind<IUserService>(TYPES.UserService).to(UserService)
-    bind<IUserController>(TYPES.UserController).to(UserController)
-    bind<IExceptionFilters>(TYPES.ExceptionFilter).to(ExceptionFilters)
-    bind<IConfigService>(TYPES.ConfigeService).to(ConfigService).inSingletonScope()
+   
+
+
+    
+
 })
 
-function bootstrap():IBootstrapRun{
+function bootstrap(){
     const appContainer = new Container();
-    appContainer.load(appBindings)
+    appContainer.bind<ILogger>(TYPES.ILogger).to(LoggerService).inSingletonScope()
+    appContainer.bind<IExceptionFilters>(TYPES.ExceptionFilter).to(ExceptionFilters)
+    appContainer.bind<UserController>(TYPES.UserController).to(UserController)
+
+    appContainer.bind<IConfigService>(TYPES.ConfigeService).to(ConfigService).inSingletonScope()
+    appContainer.bind<UserService>(TYPES.UserService).to(UserService)
+    appContainer.bind<App>(TYPES.Application).to(App)
     const app = appContainer.get<App>(TYPES.Application)
-    app.init();
+    app.connectToDb();
+
+   
+    
+
+   
+    // appContainer.load(appBindings)
+   
+    // app.connectToDb();
+
+    appContainer.bind<Repository<User>>(Repository).toDynamicValue(() => {
+        return getRepository(User);
+    });
+    
+   
     return {appContainer,app}
 }
-
-export const {app,appContainer} = bootstrap()
+export const {appContainer,app} = bootstrap()
+app.init();

@@ -16,7 +16,6 @@ const methodDecoratorFactory = (method:Methods)=>{
     return (path:string):MethodDecorator=>{
         return (target,propertyKey:string | symbol)=>{
             const controllerClass = target.constructor;
-            console.log(controllerClass)
             const routers :IRouter[] = Reflect.getMetadata(MetadataKeys.ROUTERS,controllerClass)?
             Reflect.getMetadata(MetadataKeys.ROUTERS,controllerClass):[]
 

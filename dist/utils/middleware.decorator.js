@@ -18,7 +18,6 @@ exports.ClassMiddleware = ClassMiddleware;
 function addMiddlewareToMetadata(target, metadataKey, middlewares) {
     let metadata = Reflect.getOwnMetadata(metadataKey, target);
     const controllerClass = target.constructor;
-    console.log('dd', target, controllerClass);
     let oldMiddlewares = Reflect.getMetadata(metadata_keys_1.MetadataKeys.Middlewares, controllerClass) ?
         Reflect.getMetadata(metadata_keys_1.MetadataKeys.Middlewares, controllerClass) : { middlewares: [] };
     if (!metadata) {
@@ -36,6 +35,6 @@ function addMiddlewareToMetadata(target, metadataKey, middlewares) {
     }
     newArr.push(...oldMiddlewares.middlewares, ...metadata.middlewares);
     metadata.middlewares = newArr;
-    Reflect.defineMetadata(metadataKey, metadata, target);
+    Reflect.defineMetadata(metadataKey, metadata, controllerClass);
 }
 exports.addMiddlewareToMetadata = addMiddlewareToMetadata;

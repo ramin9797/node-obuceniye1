@@ -1,5 +1,4 @@
-import { RequestHandler } from "express";
-import { ErrorMiddleware, IClassMetadata, IMethodMetadata, Middleware, classMetadataKey } from "./types";
+import {  Middleware, classMetadataKey } from "./types";
 import { MetadataKeys } from "./metadata.keys";
 
 
@@ -20,7 +19,6 @@ export function addMiddlewareToMetadata(target: Object, metadataKey: any, middle
     let metadata = Reflect.getOwnMetadata(metadataKey, target);
     const controllerClass = target.constructor;
     
-
     let oldMiddlewares =  Reflect.getMetadata(MetadataKeys.Middlewares, controllerClass)?
     Reflect.getMetadata(MetadataKeys.Middlewares,controllerClass):{middlewares:[]}
     

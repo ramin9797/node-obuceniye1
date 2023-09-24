@@ -33,11 +33,14 @@ require("reflect-metadata");
 const body_parser_1 = require("body-parser");
 const controllers_1 = require("./common/controllers");
 const metadata_keys_1 = require("./utils/metadata.keys");
+const types_2 = require("./utils/types");
+const typeorm_1 = require("typeorm");
+const ormconfig_1 = require("./ormconfig");
+const main_1 = require("./main");
 let App = exports.App = class App {
-    constructor(logger, exceptionFilter, userController, config) {
+    constructor(logger, exceptionFilter, config) {
         this.logger = logger;
         this.exceptionFilter = exceptionFilter;
-        this.userController = userController;
         this.config = config;
         this.app = (0, express_1.default)();
         this.port = parseInt(config.get("PORT"));
@@ -45,22 +48,31 @@ let App = exports.App = class App {
     useMiddleware() {
         this.app.use((0, body_parser_1.json)());
     }
+    connectToDb() {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield (0, typeorm_1.createConnection)(ormconfig_1.ormConfig);
+        });
+    }
     useRoutes() {
         const exRouter = express_1.default.Router();
         const info = [];
         controllers_1.controllers.forEach((controllerClass) => {
+            let containerClass = main_1.appContainer.get(controllerClass);
+            console.log('ddd', containerClass);
             const controllerInstance = new controllerClass();
             const basePath = Reflect.getMetadata(metadata_keys_1.MetadataKeys.BASE_PATH, controllerClass);
             const routers = Reflect.getMetadata(metadata_keys_1.MetadataKeys.ROUTERS, controllerClass);
             // const middlewares = Reflect.getMetadata(MetadataKeys.Middlewares,controllerClass);
             // console.log('miee',middlewares);
             const middlewares = { middlewares: [] };
-            const m = Reflect.getOwnMetadataKeys(controllerInstance);
-            console.log('ddddddddddddddd', m);
+            const classMiddlewares = Reflect.getMetadata(types_2.classMetadataKey, controllerClass) || { middlewares: [] };
+            // symbol use here for unique id
             routers.forEach(({ method, path, handler }) => {
+                var _a;
+                const methodMidd = Reflect.getOwnMetadata(handler, controllerClass) || {};
                 let handlers = controllerInstance[String(handler)].bind(controllerInstance);
-                if (middlewares.middlewares.length) {
-                    handlers = [...middlewares.middlewares, handlers];
+                if ((_a = methodMidd.middlewares) === null || _a === void 0 ? void 0 : _a.length) {
+                    handlers = [...classMiddlewares.middlewares, ...methodMidd.middlewares, handlers];
                 }
                 exRouter[method](path, handlers);
                 info.push({
@@ -70,12 +82,6 @@ let App = exports.App = class App {
             });
             this.app.use(basePath, exRouter);
         });
-        // const router = this.app;
-        // this.app.use('/users',this.userController.router);
-        // router.use((req, res, next) => {
-        //     console.log('Time: ', Date.now())
-        //     next()
-        // })
         exRouter.get('/login', (req, res, next) => {
             next(new http_error_class_1.HttpError(401, 'ramin'));
         });
@@ -99,7 +105,6 @@ exports.App = App = __decorate([
     (0, inversify_1.injectable)(),
     __param(0, (0, inversify_1.inject)(types_1.TYPES.ILogger)),
     __param(1, (0, inversify_1.inject)(types_1.TYPES.ExceptionFilter)),
-    __param(2, (0, inversify_1.inject)(types_1.TYPES.UserController)),
-    __param(3, (0, inversify_1.inject)(types_1.TYPES.ConfigeService)),
-    __metadata("design:paramtypes", [Object, Object, Object, Object])
+    __param(2, (0, inversify_1.inject)(types_1.TYPES.ConfigeService)),
+    __metadata("design:paramtypes", [Object, Object, Object])
 ], App);

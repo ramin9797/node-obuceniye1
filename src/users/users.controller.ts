@@ -14,26 +14,26 @@ import Controller from "../utils/controller.decorator";
 import { Get, Post } from "../utils/handlers.decorator";
 import { ClassMiddleware, Middleware } from "../utils/middleware.decorator";
 import { simpleMiddleware, simpleMiddleware2, simpleMiddleware3 } from "../common/simple.middleware";
+import { UserService } from "./user.service";
 
 @injectable()
 @Controller("/users")
 // @ClassMiddleware(simpleMiddleware3)
 export class UserController extends BaseController implements IUserController{
     constructor(
-        @inject(TYPES.ILogger) logger?:ILogger,
-        @inject(TYPES.UserService) private userService?:IUserService,
-        @inject(TYPES.ConfigeService) private config?:IConfigService
+        @inject(TYPES.ILogger) private logger:ILogger,
+        @inject(TYPES.UserService) private userService:UserService,
+        @inject(TYPES.ConfigeService) private config:IConfigService
     ){
         super();
-        // this.bindRoutes([
-        //     {path:'/register',method:'post',func:this.register,middlewares:[new ValidateMiddleware(UserLoginDto)]},
-        //     {path:'/login',method:'post',func:this.login}
-        // ])
     }
 
     @Get("/all")
     @Middleware([simpleMiddleware2,simpleMiddleware])
-    allUser(req:Request,res:Response){
+    async allUser(req:Request,res:Response){
+        let result = await this.userService.allUsers();
+        console.log('res',result);
+        
         res.status(200).json({
             message:"good"
         })
@@ -53,15 +53,17 @@ export class UserController extends BaseController implements IUserController{
         next(new HttpError(401,'Error auth','login'))
     }
 
-
+    @Post("/register")
     async register({body}:Request<{},{},UserLoginDto>,res:Response,next:NextFunction){
-        let salt = this.config?.get("SALT");
-        console.log(salt);
+        // let salt = this.config?.get("SALT");
+        // console.log(salt);
+        console.log('tt',this.logger);
         
-        const result = this.userService?.createUser(body);
-        if(!result){
-            return next(new HttpError(422,"user already exists",'register'))
-        }
+        console.log('ddd',body);
+        console.log('this.userService',this.userService);
+        
+        const result = await this.userService.createUser(body);
+        console.log('resssss',result);
         this.ok(res,result)
     }
 }

@@ -8,7 +8,6 @@ import { injectable } from "inversify";
 export abstract class BaseController{
     private readonly _router: Router;
 
-
     constructor(){
         this._router = Router();
     }
@@ -29,18 +28,6 @@ export abstract class BaseController{
 
     public created(res:Response){
         return res.status(201).json({message:"Created"});
-    }
-
-    protected bindRoutes (routes:IControllerRoute[]){
-        // console.log('ra',Symbol.for("Application"))
-        // console.log('ra',Symbol.for("Application"))
-        // for (const route of routes) {
-        //     this.logger.log(`Add Route: type:${route.method}: ${route.path} `)
-        //     const middleware = route.middlewares?.map(m=>m.execute.bind(m));
-        //     const handler = route.func.bind(this)
-        //     const pipeline= middleware?[...middleware,handler]:handler;
-        //     this.router[route.method](route.path,pipeline)
-        // }
     }
 
 }
