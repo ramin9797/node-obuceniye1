@@ -12,7 +12,6 @@ export class UserService{
     async createUser(body:any){
         const newUser = new User("ramin.web.97@gmail.com","ramin","ramin1234");
         let res = await this.userRepository.save(newUser);
-        console.log('re',res);
         return res;
         
         // await newUser.setPassword(password,10)
@@ -21,7 +20,8 @@ export class UserService{
 
 
     async allUsers(){
-        return this.userRepository.find({}); 
+        // return this.userRepository.find({}); 
+        throw new Error("Errrorrorro cixdi");
     }
 
 

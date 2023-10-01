@@ -26,7 +26,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.App = void 0;
 const express_1 = __importDefault(require("express"));
-const http_error_class_1 = require("./errors/http-error.class");
 const inversify_1 = require("inversify");
 const types_1 = require("./types");
 require("reflect-metadata");
@@ -57,20 +56,16 @@ let App = exports.App = class App {
         const exRouter = express_1.default.Router();
         const info = [];
         controllers_1.controllers.forEach((controllerClass) => {
-            let containerClass = main_1.appContainer.get(controllerClass);
-            console.log('ddd', containerClass);
-            const controllerInstance = new controllerClass();
+            let symbol = Symbol.for(controllerClass.name);
+            const containerClass = main_1.appContainer.get(symbol);
             const basePath = Reflect.getMetadata(metadata_keys_1.MetadataKeys.BASE_PATH, controllerClass);
             const routers = Reflect.getMetadata(metadata_keys_1.MetadataKeys.ROUTERS, controllerClass);
-            // const middlewares = Reflect.getMetadata(MetadataKeys.Middlewares,controllerClass);
-            // console.log('miee',middlewares);
-            const middlewares = { middlewares: [] };
             const classMiddlewares = Reflect.getMetadata(types_2.classMetadataKey, controllerClass) || { middlewares: [] };
             // symbol use here for unique id
             routers.forEach(({ method, path, handler }) => {
                 var _a;
                 const methodMidd = Reflect.getOwnMetadata(handler, controllerClass) || {};
-                let handlers = controllerInstance[String(handler)].bind(controllerInstance);
+                let handlers = containerClass[String(handler)].bind(containerClass);
                 if ((_a = methodMidd.middlewares) === null || _a === void 0 ? void 0 : _a.length) {
                     handlers = [...classMiddlewares.middlewares, ...methodMidd.middlewares, handlers];
                 }
@@ -82,10 +77,6 @@ let App = exports.App = class App {
             });
             this.app.use(basePath, exRouter);
         });
-        exRouter.get('/login', (req, res, next) => {
-            next(new http_error_class_1.HttpError(401, 'ramin'));
-        });
-        // this.app.use('/users',useRouter)
         console.table(info);
     }
     useExceptionFilters() {
@@ -93,7 +84,6 @@ let App = exports.App = class App {
     }
     init() {
         return __awaiter(this, void 0, void 0, function* () {
-            // this.useMiddleware()
             this.useRoutes();
             this.useExceptionFilters();
             this.server = this.app.listen(this.port);

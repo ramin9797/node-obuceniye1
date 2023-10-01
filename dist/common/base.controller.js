@@ -29,17 +29,6 @@ let BaseController = exports.BaseController = class BaseController {
     created(res) {
         return res.status(201).json({ message: "Created" });
     }
-    bindRoutes(routes) {
-        // console.log('ra',Symbol.for("Application"))
-        // console.log('ra',Symbol.for("Application"))
-        // for (const route of routes) {
-        //     this.logger.log(`Add Route: type:${route.method}: ${route.path} `)
-        //     const middleware = route.middlewares?.map(m=>m.execute.bind(m));
-        //     const handler = route.func.bind(this)
-        //     const pipeline= middleware?[...middleware,handler]:handler;
-        //     this.router[route.method](route.path,pipeline)
-        // }
-    }
 };
 exports.BaseController = BaseController = __decorate([
     (0, inversify_1.injectable)(),

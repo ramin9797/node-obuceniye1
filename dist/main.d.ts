@@ -5,4 +5,4 @@ export interface IBootstrapRun {
     app: App;
 }
 export declare const appBindings: ContainerModule;
-export declare const app: App, appContainer: Container;
+export declare const appContainer: Container, app: App;

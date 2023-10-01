@@ -40,17 +40,14 @@ let UserController = exports.UserController = class UserController extends base_
         this.logger = logger;
         this.userService = userService;
         this.config = config;
-        // this.bindRoutes([
-        //     {path:'/register',method:'post',func:this.register,middlewares:[new ValidateMiddleware(UserLoginDto)]},
-        //     {path:'/login',method:'post',func:this.login}
-        // ])
     }
     allUser(req, res) {
-        var _a;
-        let result = (_a = this.userService) === null || _a === void 0 ? void 0 : _a.allUsers();
-        console.log('rr', result);
-        res.status(200).json({
-            message: "good"
+        return __awaiter(this, void 0, void 0, function* () {
+            let result = yield this.userService.allUsers();
+            console.log('res', result);
+            res.status(200).json({
+                message: "good"
+            });
         });
     }
     allUser2(req, res) {
@@ -63,15 +60,10 @@ let UserController = exports.UserController = class UserController extends base_
         next(new http_error_class_1.HttpError(401, 'Error auth', 'login'));
     }
     register({ body }, res, next) {
-        var _a;
         return __awaiter(this, void 0, void 0, function* () {
-            // let salt = this.config?.get("SALT");
-            // console.log(salt);
-            console.log('tt', this.logger);
-            console.log('ddd', body);
-            console.log('this.userService', this.userService);
-            const result = yield ((_a = this.userService) === null || _a === void 0 ? void 0 : _a.createUser(body));
+            const result = yield this.userService.createUser(body);
             console.log('resssss', result);
+            this.ok(res, result);
         });
     }
 };
@@ -80,7 +72,7 @@ __decorate([
     (0, middleware_decorator_1.Middleware)([simple_middleware_1.simpleMiddleware2, simple_middleware_1.simpleMiddleware]),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, Object]),
-    __metadata("design:returntype", void 0)
+    __metadata("design:returntype", Promise)
 ], UserController.prototype, "allUser", null);
 __decorate([
     (0, handlers_decorator_1.Get)("/all2"),

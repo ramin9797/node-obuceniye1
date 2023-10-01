@@ -11,7 +11,6 @@ const methodDecoratorFactory = (method) => {
     return (path) => {
         return (target, propertyKey) => {
             const controllerClass = target.constructor;
-            console.log(controllerClass);
             const routers = Reflect.getMetadata(metadata_keys_1.MetadataKeys.ROUTERS, controllerClass) ?
                 Reflect.getMetadata(metadata_keys_1.MetadataKeys.ROUTERS, controllerClass) : [];
             routers.push({

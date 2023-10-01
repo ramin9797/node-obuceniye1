@@ -1,4 +1,4 @@
-import express, {Express} from "express";
+import express, {Express, Handler, NextFunction, Request, RequestHandler, Response} from "express";
 import {Server} from "http"
 import { ILogger } from "./logger/logger.interface";
 import { IExceptionFilters } from "./errors/exception.filter.interface";
@@ -14,6 +14,8 @@ import { classMetadataKey } from "./utils/types";
 import { createConnection } from "typeorm";
 import { ormConfig } from "./ormconfig";
 import { appContainer } from "./main";
+import { asyncWrapper } from "./common/wrappers";
+import { ErrorMiddleware } from "./common/all.interfaces";
 
 @injectable()
 export class App {
@@ -56,10 +58,19 @@ export class App {
            
             routers.forEach(({method,path,handler})=>{
                 const methodMidd = Reflect.getOwnMetadata(handler,controllerClass) || {}
-                
-                let handlers = containerClass[String(handler)].bind(containerClass);
+                let handlers:Handler[] = []
+                // let mainHandler = containerClass[String(handler)].bind(containerClass);
+
+                let callBack = (...args: any[]): any => {
+                    return containerClass[String(handler)].bind(containerClass)(...args);
+                };
+
+                callBack  = asyncWrapper(callBack);
+                // let mainHandler = this.wrapErrorMiddleware(logErrorAndContinue, callBack);
+
+
                 if(methodMidd.middlewares?.length){
-                    handlers = [...classMiddlewares.middlewares,...methodMidd.middlewares,handlers];
+                    handlers = [...classMiddlewares.middlewares,...methodMidd.middlewares,callBack];
                 }
                 exRouter[method](path,handlers)
                 info.push({
@@ -72,13 +83,14 @@ export class App {
         console.table(info);
     }
 
+   
+
     useExceptionFilters(){
         this.app.use(this.exceptionFilter.catch)
     }
 
     public async init(){
         this.useRoutes();
-        this.useExceptionFilters();
         this.server = this.app.listen(this.port);
         this.logger.log(`Server run on port : ${this.port}`)
     }
