@@ -5,7 +5,6 @@ import { LoggerService } from "./logger/logger.service";
 import { ILogger } from "./logger/logger.interface";
 import { TYPES } from "./types";
 import { IExceptionFilters } from "./errors/exception.filter.interface";
-import { IUserController } from "./users/users.controller.interface";
 import { UserController } from "./users/users.controller";
 import { UserService } from "./users/user.service";
 import { IConfigService } from "./config/config.service.interface";

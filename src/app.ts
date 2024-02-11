@@ -15,7 +15,6 @@ import { createConnection } from "typeorm";
 import { ormConfig } from "./ormconfig";
 import { appContainer } from "./main";
 import { asyncWrapper } from "./common/wrappers";
-import { ErrorMiddleware } from "./common/all.interfaces";
 
 @injectable()
 export class App {
@@ -66,7 +65,6 @@ export class App {
                 };
 
                 callBack  = asyncWrapper(callBack);
-                // let mainHandler = this.wrapErrorMiddleware(logErrorAndContinue, callBack);
 
 
                 if(methodMidd.middlewares?.length){

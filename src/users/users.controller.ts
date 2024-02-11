@@ -1,7 +1,6 @@
 import { Response,Request,NextFunction} from "express";
 import { BaseController } from "../common/base.controller";
 import { ILogger } from "../logger/logger.interface";
-import { IUserController } from "./users.controller.interface";
 import { inject, injectable } from "inversify";
 import { TYPES } from "../types";
 import { HttpError } from "../errors/http-error.class";
@@ -16,7 +15,7 @@ import { UserService } from "./user.service";
 @injectable()
 @Controller("/users")
 // @ClassMiddleware(simpleMiddleware3)
-export class UserController extends BaseController implements IUserController{
+export class UserController extends BaseController{
     constructor(
         @inject(TYPES.ILogger) private logger:ILogger,
         @inject(TYPES.UserService) private userService:UserService,
