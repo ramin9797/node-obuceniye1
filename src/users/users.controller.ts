@@ -26,19 +26,16 @@ export class UserController extends BaseController{
 
     @Get("/all")
     @Middleware([simpleMiddleware2,simpleMiddleware])
-    async allUser(req:Request,res:Response){
+    async allUser(req:Request,res:Response,next:NextFunction){
         let result = await this.userService.allUsers();
         return result;
-        // res.status(200).json({
-        //     message:"good"
-        // })
     }
     @Get("/all2")
     @Middleware([simpleMiddleware2])
     allUser2(req:Request,res:Response){
-        res.status(200).json({
+        return ({
             message:"good"
-        })
+        });
     }
 
     @Post("/login")
@@ -51,7 +48,6 @@ export class UserController extends BaseController{
     @Post("/register")
     async register({body}:Request<{},{},UserLoginDto>,res:Response,next:NextFunction){
         const result = await this.userService.createUser(body);
-        console.log('resssss',result);
         this.ok(res,result)
     }
 }

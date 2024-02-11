@@ -14,7 +14,7 @@ import { classMetadataKey } from "./utils/types";
 import { createConnection } from "typeorm";
 import { ormConfig } from "./ormconfig";
 import { appContainer } from "./main";
-import { asyncWrapper } from "./common/wrappers";
+import { asyncWrapper, resultMiddleware } from "./common/wrappers";
 
 @injectable()
 export class App {
@@ -65,12 +65,13 @@ export class App {
                 };
 
                 callBack  = asyncWrapper(callBack);
-
-
+               
                 if(methodMidd.middlewares?.length){
                     handlers = [...classMiddlewares.middlewares,...methodMidd.middlewares,callBack];
                 }
-                exRouter[method](path,handlers)
+                
+                let handlers2 = resultMiddleware(callBack);
+                exRouter[method](path,handlers2)
                 info.push({
                     api: `${method.toLocaleUpperCase()} ${basePath + path}`,
                     handler: `${controllerClass.name}.${String(handler)}`,
@@ -81,11 +82,6 @@ export class App {
         console.table(info);
     }
 
-   
-
-    useExceptionFilters(){
-        this.app.use(this.exceptionFilter.catch)
-    }
 
     public async init(){
         this.useRoutes();

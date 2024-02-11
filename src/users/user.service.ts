@@ -20,8 +20,8 @@ export class UserService{
 
 
     async allUsers(){
-        // return this.userRepository.find({}); 
-        throw new Error("Errrorrorro cixdi");
+        return this.userRepository.find({}); 
+        // throw new Error("Errrorrorro cixdi");
     }
 
 
