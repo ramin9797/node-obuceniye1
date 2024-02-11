@@ -16,7 +16,7 @@ export const ormConfig: DataSourceOptions = {
 
   // Run migrations automatically,
   // you can disable this if you prefer running migration manually.
-  migrationsRun: true,
+  migrationsRun: false,
   logging: false,
 
   // allow both start:prod and start:dev to use migrations

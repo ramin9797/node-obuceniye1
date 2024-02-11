@@ -111,4 +111,7 @@
   ],
   "files": ["src/types.d.ts"],
   "include": ["src/**/*"],
+  "paths": {
+    "@src/*":["./src/*"]
+  }
 }

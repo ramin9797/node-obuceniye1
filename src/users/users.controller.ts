@@ -1,7 +1,8 @@
 import { Response,Request,NextFunction} from "express";
+import { inject, injectable } from "inversify";
+
 import { BaseController } from "../common/base.controller";
 import { ILogger } from "../logger/logger.interface";
-import { inject, injectable } from "inversify";
 import { TYPES } from "../types";
 import { HttpError } from "../errors/http-error.class";
 import { UserLoginDto } from "./dto/login-user.dto";
@@ -9,7 +10,7 @@ import { IConfigService } from "../config/config.service.interface";
 import Controller from "../utils/controller.decorator";
 import { Get, Post } from "../utils/handlers.decorator";
 import {  Middleware } from "../utils/middleware.decorator";
-import { simpleMiddleware, simpleMiddleware2, simpleMiddleware3 } from "../common/simple.middleware";
+import { simpleMiddleware, simpleMiddleware2 } from "../common/simple.middleware";
 import { UserService } from "./user.service";
 
 @injectable()
@@ -19,7 +20,7 @@ export class UserController extends BaseController{
     constructor(
         @inject(TYPES.ILogger) private logger:ILogger,
         @inject(TYPES.UserService) private userService:UserService,
-        @inject(TYPES.ConfigeService) private config:IConfigService
+        @inject(TYPES.ConfigService) private config:IConfigService
     ){
         super();
     }

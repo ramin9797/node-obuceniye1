@@ -1,10 +1,10 @@
-import express, {Express, Handler, NextFunction, Request, RequestHandler, Response} from "express";
+import express, {Express, Handler} from "express";
+import 'reflect-metadata'
 import {Server} from "http"
 import { ILogger } from "./logger/logger.interface";
 import { IExceptionFilters } from "./errors/exception.filter.interface";
 import { inject, injectable } from "inversify";
 import { TYPES } from "./types";
-import 'reflect-metadata'
 import { json } from "body-parser";
 import { IConfigService } from "./config/config.service.interface";
 import { controllers } from "./common/controllers";
@@ -25,7 +25,7 @@ export class App {
     constructor(
         @inject(TYPES.ILogger) public logger:ILogger,
         @inject(TYPES.ExceptionFilter) public exceptionFilter:IExceptionFilters,
-        @inject(TYPES.ConfigeService) private config:IConfigService
+        @inject(TYPES.ConfigService) private config:IConfigService
     
     ){
         this.app = express();
