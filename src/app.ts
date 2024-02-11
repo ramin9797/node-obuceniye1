@@ -38,7 +38,20 @@ export class App {
     }
 
     async connectToDb(){
-         await createConnection(ormConfig);
+        let connected = false;
+        let attempts = 0;
+        console.log('ormConfig',ormConfig);
+        while (!connected && attempts < 5) { // Можете изменить количество попыток по вашему усмотрению
+            try {
+                await createConnection(ormConfig);
+              connected = true;
+            } catch (err) {
+              attempts++;
+              console.error(`Connection to database failed (attempt ${attempts}):`);
+              // Подождем некоторое время перед следующей попыткой (например, 5 секунд)
+              await new Promise(resolve => setTimeout(resolve, 5000));
+            }
+          }
     }
 
     useRoutes(){
