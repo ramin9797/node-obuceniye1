@@ -14,12 +14,25 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
+
+  rabbitmq:
+    image: rabbitmq:management
+    ports:
+      - "5672:5672"
+      - "15672:15672" # Management UI
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+
   nodejs:
     build:
       context: .
       dockerfile: Dockerfile
     depends_on:
       - postgres
+      - rabbitmq
     environment:
       DATABASE_URL: postgres://myuser:mypassword@postgres:5432/mydatabase
       TYPEORM_HOST: postgres
@@ -31,3 +44,4 @@ services:
 
 volumes:
   postgres_data:
+  rabbitmq_data:

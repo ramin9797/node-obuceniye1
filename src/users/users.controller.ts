@@ -25,13 +25,14 @@ export class UserController extends BaseController{
         super();
     }
 
-    @Get("/all")
+    @Get("")
     @Middleware([simpleMiddleware2,simpleMiddleware])
     async allUser(req:Request,res:Response,next:NextFunction){
         let result = await this.userService.allUsers();
+        this.logger.log("User")
         return result;
     }
-    @Get("/all2")
+    @Get("/posts")
     @Middleware([simpleMiddleware2])
     allUser2(req:Request,res:Response){
         return ({

@@ -8,6 +8,7 @@ import { IExceptionFilters } from "./errors/exception.filter.interface";
 import { IConfigService } from "./config/config.service.interface";
 import { ConfigService } from "./config/config.service";
 import { userModule } from "./users/user.module";
+import { postModule } from "./post/post.module";
 
 export interface IBootstrapRun{
     appContainer:Container,
@@ -25,6 +26,7 @@ function bootstrap(){
 
     // here we load custom modules
     appContainer.load(userModule)
+    appContainer.load(postModule);
     
     //end 
 

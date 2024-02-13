@@ -40,8 +40,7 @@ export class App {
     async connectToDb(){
         let connected = false;
         let attempts = 0;
-        console.log('ormConfig',ormConfig);
-        while (!connected && attempts < 5) { // Можете изменить количество попыток по вашему усмотрению
+        while (!connected && attempts < 5) {    
             try {
                 await createConnection(ormConfig);
               connected = true;
@@ -63,11 +62,16 @@ export class App {
             const containerClass = appContainer.get<symbol>(symbol) as any;
             
             const basePath = Reflect.getMetadata(MetadataKeys.BASE_PATH,controllerClass);
-            const routers:IRouter[] = Reflect.getMetadata(MetadataKeys.ROUTERS,controllerClass);
+            const routers:IRouter[] = Reflect.getMetadata(MetadataKeys.ROUTERS,controllerClass) || [];
 
             const classMiddlewares = Reflect.getMetadata(classMetadataKey,controllerClass) ||{middlewares:[]}
             // symbol use here for unique id
-           
+
+
+            const rabbitMqMethod = Reflect.getMetadata(MetadataKeys.RabbitMq,controllerClass);
+
+            if(rabbitMqMethod) rabbitMqMethod();
+            
             routers.forEach(({method,path,handler})=>{
                 const methodMidd = Reflect.getOwnMetadata(handler,controllerClass) || {}
                 let handlers:Handler[] = []
@@ -84,16 +88,24 @@ export class App {
                 }
                 
                 let handlers2 = resultMiddleware(callBack);
-                exRouter[method](path,handlers2)
+
+                // exRouter[method](basePath + path,handlers2)
                 info.push({
                     api: `${method.toLocaleUpperCase()} ${basePath + path}`,
                     handler: `${controllerClass.name}.${String(handler)}`,
                 });
+                this.app[method](basePath + path,handlers2)
             })
-            this.app.use(basePath,exRouter);
+
+            // console.log(exRouter,'exRouter2');
+            
+    
+            this.app.use(exRouter);
         })
         console.table(info);
     }
+
+
 
 
     public async init(){
