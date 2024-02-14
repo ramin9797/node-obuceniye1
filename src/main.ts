@@ -7,8 +7,8 @@ import { TYPES } from "./types";
 import { IExceptionFilters } from "./errors/exception.filter.interface";
 import { IConfigService } from "./config/config.service.interface";
 import { ConfigService } from "./config/config.service";
-import { userModule } from "./users/user.module";
-import { postModule } from "./post/post.module";
+import userModule from "./users/user.module";
+import postModule  from "./post/post.module";
 
 export interface IBootstrapRun{
     appContainer:Container,
@@ -24,15 +24,20 @@ function bootstrap(){
     appContainer.bind<App>(TYPES.Application).to(App)
     const app = appContainer.get<App>(TYPES.Application)
 
+    const controllers = [
+        ...userModule.controllers,
+        ...postModule.controllers
+    ];
+
     // here we load custom modules
-    appContainer.load(userModule)
-    appContainer.load(postModule);
+    appContainer.load(userModule.module)
+    appContainer.load(postModule.module);
     
     //end 
 
     app.connectToDb();
    
-    return {appContainer,app}
+    return {appContainer,app,controllers}
 }
-export const {appContainer,app} = bootstrap()
-app.init();
+export const {appContainer,app,controllers} = bootstrap()
+app.init(controllers);

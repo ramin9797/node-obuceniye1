@@ -7,7 +7,6 @@ import { inject, injectable } from "inversify";
 import { TYPES } from "./types";
 import { json } from "body-parser";
 import { IConfigService } from "./config/config.service.interface";
-import { controllers } from "./common/controllers";
 import { MetadataKeys } from "./utils/metadata.keys";
 import { IRouter } from "./utils/handlers.decorator";
 import { classMetadataKey } from "./utils/types";
@@ -53,11 +52,11 @@ export class App {
           }
     }
 
-    useRoutes(){
+    useRoutes(controllers:Function[]){
         const exRouter = express.Router();
         const info :Array<{api:string,handler:string}> = [];
         
-        controllers.forEach((controllerClass)=>{
+        controllers.forEach((controllerClass:any)=>{
             let symbol = Symbol.for(controllerClass.name)
             const containerClass = appContainer.get<symbol>(symbol) as any;
             
@@ -103,13 +102,17 @@ export class App {
             this.app.use(exRouter);
         })
         console.table(info);
+
+        
+        // return controllers;
+        
     }
 
 
 
 
-    public async init(){
-        this.useRoutes();
+    public async init(controllers:Function[]){
+        this.useRoutes(controllers);
         this.server = this.app.listen(this.port);
         this.logger.log(`Server run on port : ${this.port}`)
     }
