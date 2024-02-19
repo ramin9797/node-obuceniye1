@@ -3,7 +3,7 @@ import { MetadataKeys } from "./metadata.keys";
 
 
 
-export function Middleware(middleware: Middleware | Middleware[]): MethodDecorator & PropertyDecorator {
+export function Middleware(middleware: any | Middleware[]): MethodDecorator & PropertyDecorator {
     return (target: Object, propertyKey: string | symbol): void => {
         addMiddlewareToMetadata(target, propertyKey, middleware);
     };
@@ -34,6 +34,14 @@ export function addMiddlewareToMetadata(target: Object, metadataKey: any, middle
     } else {
         newArr = [middlewares];
     }
+    console.log("ramin",newArr);
+
+    let arrayCallBacks = [];
+    newArr.map(a=>{
+        // if(a?.execute)
+        // console.log(a.execute)
+    })
+    
     newArr.push(...oldMiddlewares.middlewares,...metadata.middlewares);
     metadata.middlewares = newArr;
 

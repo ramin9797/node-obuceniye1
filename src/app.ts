@@ -14,6 +14,7 @@ import { createConnection } from "typeorm";
 import { ormConfig } from "./ormconfig";
 import { appContainer } from "./main";
 import { asyncWrapper, resultMiddleware } from "./common/wrappers";
+import {IMiddleware} from "./common/middleware.interface";
 
 @injectable()
 export class App {
@@ -73,27 +74,28 @@ export class App {
             
             routers.forEach(({method,path,handler})=>{
                 const methodMidd = Reflect.getOwnMetadata(handler,controllerClass) || {}
-                let handlers:Handler[] = []
+                let handlers:IMiddleware[] = []
                 // let mainHandler = containerClass[String(handler)].bind(containerClass);
-
+                
                 let callBack = (...args: any[]): any => {
                     return containerClass[String(handler)].bind(containerClass)(...args);
                 };
 
                 callBack  = asyncWrapper(callBack);
-               
                 if(methodMidd.middlewares?.length){
-                    handlers = [...classMiddlewares.middlewares,...methodMidd.middlewares,callBack];
+                    handlers = [...classMiddlewares.middlewares,...methodMidd.middlewares];
                 }
-                
-                let handlers2 = resultMiddleware(callBack);
+                let handlers3:Handler[] =  handlers.map(a=>{
+                    return a.execute.bind(a);
+                })
 
+                let handlers2 = resultMiddleware(callBack);
                 // exRouter[method](basePath + path,handlers2)
                 info.push({
                     api: `${method.toLocaleUpperCase()} ${basePath + path}`,
                     handler: `${controllerClass.name}.${String(handler)}`,
                 });
-                this.app[method](basePath + path,handlers2)
+                this.app[method](basePath + path,handlers3,handlers2)
             })
 
             // console.log(exRouter,'exRouter2');
@@ -112,6 +114,7 @@ export class App {
 
 
     public async init(controllers:Function[]){
+        this.app.use(express.json())
         this.useRoutes(controllers);
         this.server = this.app.listen(this.port);
         this.logger.log(`Server run on port : ${this.port}`)

@@ -9,13 +9,14 @@ import { UserLoginDto } from "./dto/login-user.dto";
 import { IConfigService } from "../config/config.service.interface";
 import Controller from "../utils/controller.decorator";
 import { Get, Post } from "../utils/handlers.decorator";
-import {  Middleware } from "../utils/middleware.decorator";
-import { simpleMiddleware, simpleMiddleware2 } from "../common/simple.middleware";
+import {  ClassMiddleware, Middleware } from "../utils/middleware.decorator";
+import { simpleMiddleware, simpleMiddleware2, validationMiddleware } from "../common/simple.middleware";
 import { UserService } from "./user.service";
+import { UserRegisterDto } from "./dto/register-user.dto";
+import { ValidateMiddleware } from "../common/validate.middleware";
 
 @injectable()
 @Controller("/users")
-// @ClassMiddleware(simpleMiddleware3)
 export class UserController extends BaseController{
     constructor(
         @inject(TYPES.ILogger) private logger:ILogger,
@@ -26,14 +27,24 @@ export class UserController extends BaseController{
     }
 
     @Get("")
-    @Middleware([simpleMiddleware2,simpleMiddleware])
+    // @Middleware([simpleMiddleware2,simpleMiddleware])
     async allUser(req:Request,res:Response,next:NextFunction){
         let result = await this.userService.allUsers();
-        this.logger.log("User")
+        console.log(result,"result");
         return result;
     }
+
+
+    @Get("/:id")
+    // @Middleware([simpleMiddleware2,simpleMiddleware])
+    async (req:Request,res:Response,next:NextFunction){
+        console.log('eq',req.params);
+        const {id} = req.params;    
+        return this.userService.getUserById(+id);
+    }
+
     @Get("/posts")
-    @Middleware([simpleMiddleware2])
+    // @Middleware([simpleMiddleware2])
     allUser2(req:Request,res:Response){
         return ({
             message:"good"
@@ -42,14 +53,16 @@ export class UserController extends BaseController{
 
     @Post("/login")
     login(req:Request,res:Response,next:NextFunction){
-        console.log('req',req.user);
-        
         next(new HttpError(401,'Error auth','login'))
     }
 
     @Post("/register")
-    async register({body}:Request<{},{},UserLoginDto>,res:Response,next:NextFunction){
+    @Middleware([new ValidateMiddleware(UserRegisterDto)])
+    async register({body}:Request<{},{},UserRegisterDto>,res:Response,next:NextFunction){
         const result = await this.userService.createUser(body);
-        this.ok(res,result)
+        return ({
+            message:"good"
+        });
+        // this.ok(res,result)
     }
 }

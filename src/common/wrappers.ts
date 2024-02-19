@@ -1,4 +1,5 @@
 import { NextFunction, Request, RequestHandler, Response } from "express";
+import { HttpError } from "../errors/http-error.class";
 
 
 export const asyncWrapper = (action: RequestHandler) => {
@@ -6,7 +7,11 @@ export const asyncWrapper = (action: RequestHandler) => {
         try {
             return await action(req, res, next);
         } catch (error:any) {
-            res.status(403).json({error:"ramin"})
+            console.log(error,"error");
+            if(error instanceof HttpError){
+                return res.status(error.statusCode).json({error:error.message})
+            }
+            return res.status(401).json({error:"Internal Server Error"})
         }
     };
 };
